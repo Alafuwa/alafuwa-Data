@@ -1,15 +1,99 @@
 <!DOCTYPE html>
-<html lang="ha">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <title>ALAFUWA Dashboard</title>
+  <script type="module" src="./firebase.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Barka da zuwa Dashboard!</h1>
-    <p>An shiga cikin nasara. Wannan shine dashboard ɗinka na Alafuwa.</p>
+  <h1>Welcome to ALAFUWA</h1>
+  <p>User: <span id="user-email">Loading...</span></p>
+
+  <!-- Wallet Balance -->
+  <div id="wallet-section">
+    <h2>Wallet Balance</h2>
+    <p>₦<span id="wallet-balance">0.00</span></p>
   </div>
+
+  <!-- Buy Data Form -->
+  <div id="buy-data-section">
+    <h2>Buy Data</h2>
+    <form id="buy-data-form">
+      <label for="network">Network:</label>
+      <select id="network" required>
+        <option value="">Select Network</option>
+        <option value="MTN">MTN</option>
+        <option value="GLO">GLO</option>
+        <option value="AIRTEL">AIRTEL</option>
+        <option value="9MOBILE">9MOBILE</option>
+      </select><br><br>
+
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" required><br><br>
+
+      <label for="amount">Amount (₦):</label>
+      <input type="number" id="amount" required><br><br>
+
+      <button type="submit">Buy Data</button>
+    </form>
+  </div>
+
+  <!-- Transaction Logs -->
+  <div id="transaction-section">
+    <h2>Transaction Logs</h2>
+    <ul id="transaction-list">
+      <!-- Logs will be added here -->
+    </ul>
+  </div>
+
+  <!-- Logout -->
+  <button onclick="logout()">Logout</button>
+
+  <!-- Script -->
+  <script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { auth } from './firebase.js';
+
+    // Protect page from unauthenticated access
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("user-email").textContent = user.email || user.uid;
+      } else {
+        window.location.href = "register.html";
+      }
+    });
+
+    // Dummy Wallet Balance
+    let walletBalance = 1500.00;
+    document.getElementById("wallet-balance").textContent = walletBalance.toFixed(2);
+
+    // Buy Data Form Submission
+    document.getElementById("buy-data-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const network = document.getElementById("network").value;
+      const phone = document.getElementById("phone").value;
+      const amount = document.getElementById("amount").value;
+
+      const transaction = `${network} | ${phone} | ₦${amount} | ${new Date().toLocaleString()}`;
+      const li = document.createElement("li");
+      li.textContent = transaction;
+      document.getElementById("transaction-list").prepend(li);
+
+      // Optionally subtract amount from wallet
+      walletBalance -= parseFloat(amount);
+      document.getElementById("wallet-balance").textContent = walletBalance.toFixed(2);
+
+      // Clear form
+      document.getElementById("buy-data-form").reset();
+    });
+
+    // Logout
+    function logout() {
+      signOut(auth).then(() => {
+        window.location.href = "register.html";
+      });
+    }
+
+    window.logout = logout; // expose to global
+  </script>
 </body>
 </html>

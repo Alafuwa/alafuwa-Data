@@ -1,30 +1,54 @@
 <!DOCTYPE html>
-<html lang="ha">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Alafuwa Data App - Login</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h1>Shiga Alafuwa</h1>
-      <form>
-        <label for="email">Imel:</label>
-        <input type="email" id="email" required placeholder="Shigar da imel ɗinka" />
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Alafuwa</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Login to Alafuwa</h2>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+  </form>
+  <p>Don't have an account? <a href="register.html">Register here</a></p>
 
-        <label for="password">Kalmar sirri:</label>
-        <input type="password" id="password" required placeholder="Shigar da kalmar sirri" />
+  <script type="module">
+    // Import Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        <button type="submit">Shiga</button>
-      </form>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-      <div class="extra-links">
-        <a href="#">Create Account</a>
-        <a href="#">Forgot Password?</a>
-      </div>
-    </div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    <script src="app.js"></script>
-  </body>
+    // Login Logic
+    const loginForm = document.getElementById("loginForm");
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Success: Redirect to dashboard
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
+    });
+  </script>
+</body>
 </html>
